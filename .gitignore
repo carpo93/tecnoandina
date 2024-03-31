@@ -17,3 +17,4 @@ logs/
 eclipse-mosquitto
 influxdata
 mysqldata
+__pycache__/
