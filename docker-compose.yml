@@ -2,23 +2,69 @@ version: "3"
 
 services:
   servicio-1:
-    build: ./servicio-1/
+    build: ./servicio-1
     ports:
-      - 8081:8080
+      - "${LOCAL_PORT_1}:${IMAGE_PORT_1}"
+    networks:
+      - ta-network
+    environment:
+      - MQTTO_HOST=${MQTTO_HOST}
+      - MQTTO_PORT=${MQTTO_PORT}
+      - TZ=${TZ}
+    volumes:
+      - ./servicio-1/app:/app
     depends_on:
       - mosquitto
 
   servicio-2:
-    build: ./servicio-2/
+    build: ./servicio-2
     ports:
-      - 8082:8080
+      - "${LOCAL_PORT_2}:${IMAGE_PORT_2}"
+    networks:
+      - ta-network
+    environment:
+      - MQTTO_HOST=${MQTTO_HOST}
+      - MQTTO_PORT=${MQTTO_PORT}
+      - INFLUXDB_HOST=${INFLUXDB_HOST}
+      - INFLUXDB_PORT=${INFLUXDB_PORT}
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - TZ=${TZ}
+    volumes:
+      - ./servicio-2/app:/app
     depends_on:
       - mosquitto
+      - influx
 
   servicio-3:
     build: ./servicio-3/
     ports:
-      - 8083:8080
+      - "${LOCAL_PORT_3}:${IMAGE_PORT_3}"
+    networks:
+      - ta-network
+    environment:
+      - INFLUXDB_HOST=${INFLUXDB_HOST}
+      - INFLUXDB_PORT=${INFLUXDB_PORT}
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - LOCAL_PORT_3=${LOCAL_PORT_3}
+      - IMAGE_PORT_3=${IMAGE_PORT_3}
+      - IMAGE_IP_3=${IMAGE_IP_3}
+      - TZ=${TZ}
+    volumes:
+      - ./servicio-3/app:/app
     depends_on:
       - influx
       - mysql
@@ -26,34 +72,45 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2
     ports:
-      - 1883:1883
+      - "${MQTTO_PORT}:${MQTTO_PORT}"
+    networks:
+      - ta-network
+    environment:
+      - TZ=${TZ}
     volumes: 
       - ./eclipse-mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   mysql:
     image: mysql:8
     volumes:
-      - mysqldata:/var/lib/mysql
+      - ./mysqldata:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
     ports:
-      - 3306:3306
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    networks:
+      - ta-network
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=tecnoandina
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TZ=${TZ}
   
   influx:
     image: influxdb:alpine
     volumes:
-      - influxdata:/var/lib/influxdb
+      - ./influxdata:/var/lib/influxdb
     ports:
-      - 8086:8086
+      - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
+    networks:
+      - ta-network
     environment:
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=admin
-      - DOCKER_INFLUXDB_INIT_ORG=tecnoandina
-      - DOCKER_INFLUXDB_INIT_BUCKET=system
-  
-volumes:
-  mysqldata:
-  influxdata:
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - TZ=${TZ}
+networks:
+  ta-network:
+    driver: bridge 

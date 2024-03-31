@@ -1,0 +1,19 @@
+# Ignorar archivos generados por Docker Compose
+docker-compose.override.yml
+docker-compose.yml
+docker-compose.yml.override
+
+# Ignorar archivos generados por Docker
+.docker/
+
+# Ignorar archivos de caché de Docker
+.dockerignore
+
+# Ignorar archivos de logs y otros generados por Docker
+logs/
+*.log
+
+#Ignorar volumenes
+eclipse-mosquitto
+influxdata
+mysqldata

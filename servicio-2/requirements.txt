@@ -1,0 +1,5 @@
+Flask
+APScheduler 
+loging
+paho-mqtt
+influxdb-client
