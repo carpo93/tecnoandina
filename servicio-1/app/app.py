@@ -22,7 +22,7 @@ app.config['mqtt_keep_alive']  = 60
 app.config['mqtt_channel'] = 'challenge/dispositivo/rx'
 
 # Define la periodicidad con la que se ejecutara el envío de mensajes, en segundos
-app.config['seconds_interval'] = 5
+app.config['seconds_interval'] = 60
 
 # Define el intervalo entre el que se obtendrán aleatoriamente las mediciones
 app.config['from_measurement_value'] = 0
