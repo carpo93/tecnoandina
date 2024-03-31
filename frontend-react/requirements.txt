@@ -3,4 +3,3 @@ APScheduler
 loging
 influxdb-client
 mysql-connector-python
-flask-cors

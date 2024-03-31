@@ -69,6 +69,15 @@ services:
       - influx
       - mysql
 
+  frontend:
+    build: ./frontend-react
+    ports:
+      - "3000:80"  # Puerto del contenedor expuesto al puerto local 3000
+    networks:
+      - ta-network
+    environment:
+      - TZ=${TZ}
+
   mosquitto:
     image: eclipse-mosquitto:2
     ports:

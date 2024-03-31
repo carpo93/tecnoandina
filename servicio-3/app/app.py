@@ -1,5 +1,6 @@
 import logging
 from flask import Flask, request, jsonify,abort
+from flask_cors import CORS
 from influxdb_client import InfluxDBClient, Point,Query
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
@@ -10,6 +11,7 @@ import re
 import secrets
 
 app = Flask(__name__)
+CORS(app)
 
 # Configuración básica del registro de log
 logging.basicConfig(level=logging.INFO)
@@ -249,7 +251,6 @@ def save_measurements_as_alerts(p_measurements):
             v_value      = row.values["_value"]
             v_time       = row.values["_time"]
             v_alert_type = get_alert_type(int(v_version),int(v_value))
-            v_timezone   = app.config['timezone']
             sql = "INSERT INTO alertas (datetime,value,version,type) VALUES (CONVERT_TZ(%s,'+00:00','America/Santiago'), %s,%s,%s) ON DUPLICATE KEY UPDATE updated_at = now()"
             values = (v_time,v_value,v_version,v_alert_type)
             # Ejecutar la consulta de inserción
@@ -264,9 +265,9 @@ def save_measurements_as_alerts(p_measurements):
 def get_alert_type(p_version,p_value):
     # Se calculan los tipos de alertas, se decide poner nulo para aquellos casos que no cumplan las parametrizaciones definidas
     if p_version == 1:
-        if p_value > 200:
+        if p_value > 200 and p_value <= 500:
             return 'BAJA'
-        elif p_value > 500:
+        elif p_value > 500 and p_value <= 800:
             return 'MEDIA'
         elif p_value > 800 and p_value < 1000:
             return 'ALTA'
@@ -275,9 +276,9 @@ def get_alert_type(p_version,p_value):
     elif p_version == 2:
         if p_value < 200 and p_value >= 0 :
             return 'ALTA'
-        elif p_value < 500:
+        elif p_value < 500 and p_value >= 200:
             return 'MEDIA'
-        elif p_value < 800:
+        elif p_value < 800 and p_value >= 500:
             return 'BAJA'
         else:
             return None
