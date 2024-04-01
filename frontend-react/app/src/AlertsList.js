@@ -11,8 +11,8 @@ const AlertsList = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [versionFilter, setVersionFilter] = useState('1');
-  const [typeFilter, setTypeFilter] = useState(null);
-  const [sendedFilter, setSendedFilter] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('todos');
+  const [sendedFilter, setSendedFilter] = useState('todos');
   const [procesarBtnDisabled, setProcesarBtnDisabled] = useState(true);
   const [enviarBtnDisabled, setEnviarBtnDisabled] = useState(true);
   const [showToast, setShowToast] = useState(false);

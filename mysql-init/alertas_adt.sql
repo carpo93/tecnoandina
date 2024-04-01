@@ -1,5 +1,3 @@
-CREATE DATABASE tecnoandina;
-
 USE tecnoandina;
 
 -- Se decide dejar los campos de fecha como timestamp para poder manejar mejor los cambios de zona horaria (verano/invierno)
